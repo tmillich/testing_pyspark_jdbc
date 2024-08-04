@@ -1,5 +1,6 @@
 from pyspark import SparkConf
 from pyspark.sql import SparkSession, SQLContext
+from pyspark.sql.dataframe import DataFrame
 
 URL = 'jdbc:oracle:thin:system/"123456"@localhost:1521/XE'
 # USER: sys and system have more rights -> only with serivce name XE
@@ -11,7 +12,7 @@ DRIVER = "oracle.jdbc.OracleDriver"
 BUILD_PATH = "/workspaces/testing_pyspark/build/*"
 
 
-def main():
+def setupSpark() -> SparkSession:
     conf = SparkConf() \
         .setAppName("SarkTest") \
         .set("spark.driver.host", "127.0.0.1") \
@@ -22,8 +23,12 @@ def main():
     spark = SparkSession.builder.config(conf=conf).getOrCreate()
 
     sc = spark.sparkContext
-    sql_context = SQLContext(sparkContext=sc)
     sc.setLogLevel("WARN")
+
+    return spark
+
+
+def readData(spark: SparkSession) -> DataFrame:
     jdbcDF = spark.read \
         .format("jdbc") \
         .option("url", URL) \
@@ -34,9 +39,21 @@ def main():
         .load()
 
     jdbcDF.show(truncate=False)
-    jdbcDF.write.parquet("build/test.parquet", mode="overwrite")
+
+    return jdbcDF
+
+
+def writeParquet(spark: SparkSession, df: DataFrame, local=True) -> None:
+    df.write.parquet("build/test.parquet", mode="overwrite")
+
     output_parquet = spark.read.parquet("build/test.parquet")
     output_parquet.show(truncate=False)
+
+
+def main():
+    spark = setupSpark()
+    df = readData(spark)
+    writeParquet(spark, df, local=True)
 
 
 if __name__ == "__main__":
