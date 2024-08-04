@@ -1,3 +1,6 @@
+build_project:
+	sh install_dependencies.sh
+
 start_spark_time:
 	spark-submit --driver-class-path build/ojdbc10.jar \
 				--jars build/ojdbc10.jar \
