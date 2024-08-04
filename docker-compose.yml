@@ -1,0 +1,21 @@
+services:
+
+  # Oracle service (label used to access the service container)
+  oracle:
+
+    # Docker Hub image (feel free to change the tag "latest" to any other available one)
+    image: container-registry.oracle.com/database/express:21.3.0-xe
+
+    # Provide passwords and other environment variables to container
+    environment:
+      ORACLE_PWD: "123456"
+
+    # Forward Oracle port
+    ports:
+      - 1521:1521
+      - 5500:5500
+    volumes:
+      - ./sql/:/opt/oracle/scripts/startup
+
+networks:
+  default:
