@@ -8,6 +8,13 @@ start_spark_time:
 				--conf "spark.executor.extraJavaOptions=-Duser.timezone=UTC" \
 				start_spark.py
 
+start_spark_time_local:
+	spark-submit --driver-class-path build/ojdbc10.jar \
+				--jars build/ojdbc10.jar \
+				--conf "spark.driver.extraJavaOptions=-Duser.timezone=Europe/Berlin" \
+				--conf "spark.executor.extraJavaOptions=-Duser.timezone=Europe/Berlin" \
+				start_spark.py
+
 start_spark:
 	spark-submit --driver-class-path build/ojdbc10.jar \
 				--jars build/ojdbc10.jar \

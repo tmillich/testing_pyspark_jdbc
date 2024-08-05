@@ -18,7 +18,7 @@ def setupSpark() -> SparkSession:
         .set("spark.driver.host", "127.0.0.1") \
         .set("spark.driver.extraClassPath", BUILD_PATH) \
         .set("spark.executor.extraClassPath", BUILD_PATH) \
-        .set("spark.sql.session.timeZone", "UTC")
+        .set("spark.sql.session.timeZone", "Europe/Berlin")
 
     spark = SparkSession.builder.config(conf=conf).getOrCreate()
 
@@ -44,7 +44,7 @@ def readData(spark: SparkSession) -> DataFrame:
 
 
 def writeParquet(spark: SparkSession, df: DataFrame, local=True) -> None:
-    df.write.parquet("build/test.parquet", mode="overwrite")
+    df.write.parquet("build/test.parquet", mode="append")
 
     output_parquet = spark.read.parquet("build/test.parquet")
     output_parquet.show(truncate=False)
